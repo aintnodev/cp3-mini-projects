@@ -3,44 +3,14 @@
 using namespace std;
 
 class Password {
-  bool hasInt() {
-    const string num = "0123456789";
-    for (int i = 0; i < password.length(); i++) {
-      for (int j = 0; j < num.length(); j++) {
-        if (password[i] == num[j]) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-  bool hasUppercase() {
-    const string uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    for (int i = 0; i < password.length(); i++) {
-      for (int j = 0; j < uppercase.length(); j++) {
-        if (password[i] == uppercase[j]) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-  bool hasLowercase() {
-    const string lowercase = "abcdefghijklmnopqrstuvwxyz";
-    for (int i = 0; i < password.length(); i++) {
-      for (int j = 0; j < lowercase.length(); j++) {
-        if (password[i] == lowercase[j]) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-  bool hasSymbol() {
-    const string symbol = "!@#$%^&*()";
-    for (int i = 0; i < password.length(); i++) {
-      for (int j = 0; j < symbol.length(); j++) {
-        if (password[i] == symbol[j]) {
+  const string num = "0123456789";
+  const string uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const string lowercase = "abcdefghijklmnopqrstuvwxyz";
+  const string symbol = "!@#$%^&*()";
+  bool hasLoop(string pass, string array) {
+    for (int i = 0; i < pass.length(); i++) {
+      for (int j = 0; j < array.length(); j++) {
+        if (pass[i] == array[j]) {
           return true;
         }
       }
@@ -49,10 +19,10 @@ class Password {
   }
   int score() {
     int score = 0;
-    score += hasInt() ? 1 : 0;
-    score += hasUppercase() ? 1 : 0;
-    score += hasLowercase() ? 1 : 0;
-    score += hasSymbol() ? 1 : 0;
+    score += hasLoop(password, num) ? 1 : 0;
+    score += hasLoop(password, uppercase) ? 1 : 0;
+    score += hasLoop(password, lowercase) ? 1 : 0;
+    score += hasLoop(password, symbol) ? 1 : 0;
     return score;
   }
 
@@ -64,7 +34,6 @@ public:
 
 void Password::check() {
   const int len = password.length();
-  cout << score() << endl;
   if (len > 8 and score() > 2 or len > 16) {
     cout << "It is a strong password" << endl;
   } else if (len >= 8) {
