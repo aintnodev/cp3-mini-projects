@@ -1,4 +1,5 @@
 #include <cctype>
+#include <cstring>
 #include <iostream>
 #include <random>
 #include <string>
@@ -8,7 +9,7 @@ using u32 = uint_least32_t;
 using engine = mt19937;
 
 class Password {
-  const string num = "0123456789";
+  const string number = "0123456789";
   const string uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const string lowercase = "abcdefghijklmnopqrstuvwxyz";
   const string symbol = "!@#$%^&*()";
@@ -31,7 +32,7 @@ class Password {
   }
   int score() {
     int score = 0;
-    score += hasLoop(password, num) ? 1 : 0;
+    score += hasLoop(password, number) ? 1 : 0;
     score += hasLoop(password, uppercase) ? 1 : 0;
     score += hasLoop(password, lowercase) ? 1 : 0;
     score += hasLoop(password, symbol) ? 1 : 0;
@@ -41,12 +42,10 @@ class Password {
 public:
   string password;
   void check();
-  void generate();
+  void generate(int, bool, bool, bool, bool);
 };
 
 void Password::check() {
-  cout << "Enter a password: ";
-  cin >> password;
   const int len = password.length();
   if (len > 8 and score() > 2 or len > 16) {
     cout << "It is a strong password" << endl;
@@ -57,22 +56,62 @@ void Password::check() {
   }
 }
 
-void Password::generate() {
-  int len;
-  string password;
-  const string rstring = num + uppercase + lowercase + symbol;
-  cout << "Enter password's length: ";
-  cin >> len;
-  cout << randNum(rstring.length()) << endl;
+void Password::generate(int len = 20, bool addUpper = true,
+                        bool addLower = true, bool addNum = true,
+                        bool addSym = true) {
+  string password, rstring;
+  rstring += (addUpper) ? uppercase : "";
+  rstring += (addLower) ? lowercase : "";
+  rstring += (addNum) ? number : "";
+  rstring += (addSym) ? symbol : "";
   for (int i = 0; i < len; i++) {
     password += rstring[randNum(rstring.length())];
   }
-  cout << "Generated password: " << password << endl;
+  cout << "Generated password:" << password << endl;
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+  if (argc < 2) {
+    cerr << "Error:\tno argument specified" << endl
+         << " -c\tcheck a password" << endl
+         << " -g\tgenerate a password" << endl
+         << " -l\tlength of password" << endl
+         << " -U\tinclude uppercase chars (not implemented yet)" << endl
+         << " -u\tinclude lowercase chars (not implemented yet)" << endl
+         << " -s\tinclude symbol chars (not implemented yet)" << endl
+         << " -n\tinclude number chars (not implemented yet)" << endl;
+    return 1;
+  }
+
   Password pass;
-  pass.check();
-  pass.generate();
+
+  if (strcmp(argv[1], "-g") == 0) {
+    if (argv[2]) {
+      if (strcmp(argv[2], "-l") == 0) {
+        if (argv[3]) {
+          int len = stoi(argv[3]);
+          if (len > 0) {
+            pass.generate(len);
+          } else {
+            cerr << "Error:\tpassword length must be a positive integer"
+                 << endl;
+          }
+        } else {
+          cerr << "Error:\tprovide a integer value as password length" << endl;
+        }
+      } else {
+        cerr << "Error:\t" << argv[2] << " is not a valid argument" << endl;
+      }
+    } else {
+      pass.generate();
+    }
+  } else if (strcmp(argv[1], "-c") == 0) {
+    pass.password = argv[2];
+    cout << pass.password;
+    pass.check();
+  } else {
+    cerr << "Error:\t" << argv[2] << " is not a valid argument" << endl;
+  }
+
   return 0;
 }
